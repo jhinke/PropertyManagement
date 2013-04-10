@@ -1,0 +1,105 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
+
+
+public class ShowAllUI extends JPanel implements ActionListener {
+
+  private static final long serialVersionUID = 1L;
+	
+	private JScrollPane	scrollPane;
+	private JTable tableReservations;
+	private JButton buttonReturnToReservations;
+	private JButton buttonLogout;
+	
+	private	Reservations owner; //what class should this be?
+	
+	public ShowAllUI (Reservations owner, uiNewResPanel dataset){	//check classes
+		this.owner = owner;
+		
+		initialzeTableReservations(dataset);
+		initializeButtonReturnToReservations();
+		initizalizeButtonLogout();
+		
+		this.setVisible(true);
+	}
+	
+	private void initizalizeButtonLogout() {
+		buttonLogout = new JButton ("Logout");
+		buttonLogout.addActionListener(this);
+		this.add(buttonLogout);
+		
+	}
+
+	private void initializeButtonReturnToReservations() {
+		buttonReturnToReservations = new JButton ("Return to Reservations");
+		buttonReturnToReservations.addActionListener(this);
+		this.add(buttonReturnToReservations);
+		
+	}
+
+	private void initialzeTableReservations (uiNewResPanel dataset){
+		ArrayList<String> fields = uiNewResPanel.getFieldNames();
+		
+		int numberOfRows = dataset.size();
+		int numberOfColumns = fields.size();
+		
+		JTable tableReservations = new JTable (numberOfRows, numberOfColumns);//**
+	
+		scrollPane = new JScrollPane (tableReservations);
+		tableReservations.setFillsViewportHeight(true);
+		this.add(scrollPane);
+		tableReservations.setVisible (true);
+		
+		populateDatasetJTable(dataset);
+	
+	}
+	
+	private void populateDatasetJTabe (uiNewResPanel dataset){
+		ArrayList<String> fields = uiNewResPanel.getFieldNames();
+		
+		TableColumn column;
+		column = tableReservations.getColumn("First Name");
+		column.setHeaderValue(fields.get(0));
+		
+		column = tableReservations.getColumn("Last Name");
+		column.setHeaderValue(fields.get(1));
+		
+		column = tableReservations.getColumn("Room Number");
+		column.setHeaderValue(fields.get(2));
+		
+		column = tableReservations.getColumn("Available?");
+		column.setHeaderValue(fields.get(3));
+		
+		column = tableReservations.getColumn("Email");
+		column.setHeaderValue(fields.get(4));
+		
+		for (int row = 0; row<dataset.size(); row++){
+			Reservations reservations = dataset.get(row);
+			
+			for(int col = 0; col<fields.size(); col++){
+			tableReservations.setValueAt(reservations.getValue(col),row,col);
+			
+			}
+		}
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
+		
+		if(source == buttonReturnToReservations){
+			owner.messageAction(this, SystemUI.ActionMessage.ACTION_CANCELLED);
+		}else if (source == buttonLogout){
+			owner.messageAction(this, SecurityUI.SecurityMessage.LOGOUT);
+		}
+		}
+	
+}
+
